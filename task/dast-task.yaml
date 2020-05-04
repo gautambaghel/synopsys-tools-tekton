@@ -1,0 +1,20 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: dast
+spec:
+  workspaces:
+  - name: maven-repo
+  inputs:
+    resources:
+      - name: source
+        type: git
+  steps:
+    - name: scan
+      image: docker.io/gautambaghel/synopsys-detect:mvn
+      workingDir: /workspace/source
+      args:
+        - --detect.source.path="/workspace/source"
+        - --blackduck.url="https://bizdevhub.blackducksoftware.com"
+        - --blackduck.api.token="MDVlYWEyODQtMzc5NS00NzVkLWJhN2MtN2M4YWY3ZmUwMjJiOjRmNjc0OWEyLWFiZjUtNDgwNS05ZjBjLTllNzJmNjVmYmNhNQ=="
+        - --detect.tools="DETECTOR"

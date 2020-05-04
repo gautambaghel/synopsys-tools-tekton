@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: seeker
+  namespace: seeker
+  labels:
+    app: seeker-reporting
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: seeker-reporting
+  template:
+    metadata:
+      labels:
+        app: seeker-reporting
+    spec:
+      containers:
+      - name: seeker-reporting
+        image:  gautambaghel/seeker-polaris-report:latest
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
+          limits:
+            memory: "512Mi"
+            cpu: "1000m"

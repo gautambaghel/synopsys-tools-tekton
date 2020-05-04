@@ -1,0 +1,29 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: build
+spec:
+  inputs:
+    resources:
+      - name: source
+        type: git
+  steps:
+    - name: build
+      image: gcr.io/cloud-builders/mvn
+      workingDir: /workspace/source
+      resources: {}
+      command:
+        - /usr/bin/mvn 
+        - package
+    #   GETTING ERRORS AFTER INITIAL RUN IN STORING DUE TO PVC POLICY BEING "ReadWriteOnce"
+    #   REMOVE THIS IN ACTUAL USE CASE, USE "ReadWriteMany"
+    #   OR STORE IN AN ARTIFACT REPOSITORY LIKE artifactory, aws, azure or gcp
+    # - name: store
+    #   image: busybox
+    #   workingDir: /workspace/source
+    #   resources: {}
+    #   command: [cp]
+    #   args:
+    #     ["-rv", "target/", "/workspace/maven-repo/"]
+  workspaces:
+    - name: maven-repo

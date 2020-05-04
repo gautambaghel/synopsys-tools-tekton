@@ -1,0 +1,27 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: cd-pipeline
+spec:
+  workspaces:
+  - name: source-repo-workspace
+  - name: seeker
+  resources:
+  - name: app-git
+    type: git
+  tasks:
+  - name: deploy-app
+    params:
+    - name: deployFileName
+      value: "deploy.yaml"
+    taskRef:
+      name: deploy
+    resources:
+      inputs:
+      - name: source
+        resource: app-git
+    workspaces:
+    - name: maven-repo
+      workspace: source-repo-workspace
+    - name: seeker
+      workspace: seeker

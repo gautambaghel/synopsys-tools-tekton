@@ -1,0 +1,25 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: sast
+spec:
+  workspaces:
+  - name: maven-repo
+  inputs:
+    params:
+    - name: Url
+      description: The Solution URL
+      type: string
+    - name: Token
+      description: The Solution Token
+      type: string
+    resources:
+    - name: source
+      type: git
+  steps:
+    - name: sast
+      image: docker.io/gautambaghel/polaris:mvn
+      workingDir: /workspace/source
+      args:
+        - --polaris.url="$(params.Url)"
+        - --polaris.access.token="$(params.Token)"

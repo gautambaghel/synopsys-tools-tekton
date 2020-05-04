@@ -1,0 +1,32 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: deploy
+spec:
+  workspaces:
+  - name: maven-repo
+  - name: seeker
+  inputs:
+    params:
+    - name: deployFileName
+      description: The file to deploy the app in cluster
+      type: string
+    resources:
+      - name: source
+        type: git
+  steps:
+    - name: setup
+      image: docker.io/gautambaghel/wget-unzip:latest
+      workingDir: /workspace/seeker
+      resources: {}
+      command:
+      - "sh"
+      - -c
+      - "ls -l"
+    - name: run-kubectl
+      image: lachlanevenson/k8s-kubectl
+      command: ["kubectl"]
+      args:
+        - "apply"
+        - "-f"
+        - "/workspace/source/$(params.deployFileName)"

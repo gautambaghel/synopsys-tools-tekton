@@ -1,0 +1,12 @@
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: app-git
+  namespace: default
+spec:
+  type: git
+  params:
+    - name: url
+      value: 'https://github.com/gautambaghel/ducky-crm.git'
+    - name: revision
+      value: tekton

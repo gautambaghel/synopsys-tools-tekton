@@ -1,0 +1,103 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: ci-pipeline
+spec:
+  workspaces:
+  - name: source-repo-workspace
+  resources:
+  - name: app-git
+    type: git
+  tasks:
+  - name: cleanup
+    taskRef:
+      name: mvn
+    params:
+    - name: GOALS
+      value: ["clean"]
+    resources:
+      inputs:
+      - name: source
+        resource: app-git
+    workspaces:
+    - name: maven-repo
+      workspace: source-repo-workspace
+  - name: build
+    runAfter: ["cleanup"]
+    taskRef:
+      name: build
+    resources:
+      inputs:
+      - name: source
+        resource: app-git
+    workspaces:
+    - name: maven-repo
+      workspace: source-repo-workspace
+  - name: coverity-sast
+    taskRef:
+      name: sast
+    runAfter: ["cleanup"]
+    params:
+    - name: Url
+      value: "<INSERT_POLARIS_URL_HERE>"
+    - name: Token
+      value: "<INSERT_POLARIS_TOKEN_HERE>"
+    resources:
+      inputs:
+      - name: source
+        resource: app-git
+    workspaces:
+    - name: maven-repo
+      workspace: source-repo-workspace
+  - name: verify
+    runAfter: ["build"]
+    taskRef:
+      name: mvn
+    params:
+    - name: GOALS
+      value: ["verify"] 
+    resources:
+      inputs:
+      - name: source
+        resource: app-git
+    workspaces:
+    - name: maven-repo
+      workspace: source-repo-workspace
+  - name: blackduck-sca
+    taskRef:
+      name: sca
+    runAfter: ["build"]
+    params:
+    - name: Url
+      value: "INSERT_BLACKDUCK_URL_HERE"
+    - name: Token
+      value: "INSERT_BLACKDUCK_TOKEN_HERE"
+    resources:
+      inputs:
+      - name: source
+        resource: app-git
+    workspaces:
+    - name: maven-repo
+      workspace: source-repo-workspace
+  - name: push-to-registry
+    taskRef:
+      name: push
+    runAfter: ["verify"]
+    params:
+    - name: repoUrl
+      value: "quay.io"
+    - name: repoOrgName
+      value: "opssighttestorg"
+    - name: imageName
+      value: "ducky-crm"
+    - name: imageVersion
+      value: "latest"
+    - name: workspaceName
+      value: "maven-repo"
+    resources:
+      inputs:
+        - name: source
+          resource: app-git
+    workspaces:
+    - name: maven-repo
+      workspace: source-repo-workspace

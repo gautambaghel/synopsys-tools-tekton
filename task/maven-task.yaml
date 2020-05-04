@@ -1,0 +1,40 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: mvn
+spec:
+  params:
+    - default:
+        - package
+      description: The Maven goals to run
+      name: GOALS
+      type: array
+  inputs:
+    resources:
+      - name: source
+        type: git
+  steps:
+    - command:
+        - sh
+        - -c
+        - "ls -l && cd ../ && ls -l && cd maven-repo && ls -l"
+      image: busybox
+      resources: {}
+      workingDir: /workspace/source
+    - command:
+        - /usr/bin/mvn
+      args:
+        - $(inputs.params.GOALS)
+      image: gcr.io/cloud-builders/mvn
+      name: mvn
+      resources: {}
+      workingDir: /workspace/source
+    - command:
+        - sh
+        - -c
+        - "ls -l && cd ../ && ls -l && cd maven-repo && ls -l"
+      image: busybox
+      resources: {}
+      workingDir: /workspace/source
+  workspaces:
+    - name: maven-repo

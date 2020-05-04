@@ -1,0 +1,19 @@
+---
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineRun
+metadata:
+  generateName: ci-pipeline-run-
+  namespace: default
+  labels:
+    tekton.dev/pipeline: ci-pipeline
+spec:
+  pipelineRef:
+    name: ci-pipeline
+  resources:
+    - name: app-git
+      resourceRef:
+        name: app-git
+  workspaces:
+  - name: source-repo-workspace
+    persistentVolumeClaim:
+      claimName: source-repo-pvc

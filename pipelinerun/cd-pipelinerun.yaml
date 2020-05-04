@@ -1,0 +1,23 @@
+---
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineRun
+metadata:
+  generateName: cd-pipeline-run-
+  namespace: default
+  labels:
+    tekton.dev/pipeline: cd-pipeline
+spec:
+  serviceAccountName: tekton-sa
+  pipelineRef:
+    name: cd-pipeline
+  resources:
+    - name: app-git
+      resourceRef:
+        name: app-git
+  workspaces:
+  - name: source-repo-workspace
+    persistentVolumeClaim:
+      claimName: source-repo-pvc
+  - name: seeker
+    persistentVolumeClaim:
+      claimName: seeker-pvc

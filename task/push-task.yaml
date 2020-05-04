@@ -1,0 +1,45 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: push
+spec:
+  workspaces:
+  - name: maven-repo
+  inputs:
+    resources:
+      - name: source
+        type: git
+    params:
+    - name: repoUrl
+      description: The Repo URL
+      type: string
+    - name: repoOrgName
+      description: The repo organization name
+      type: string
+    - name: imageName
+      description: The image name
+      type: string
+    - name: imageVersion
+      description: The image version
+      type: string
+    - name: workspaceName
+      description: The workspace name where app is stored
+      type: string
+  steps:
+    - name: push-using-buildah
+      image: quay.io/buildah/stable
+      workingDir: /workspace/source
+      command:
+        - sh
+        - -c
+        - "mkdir target/ && cp -vr /workspace/$(params.workspaceName)/target/ /workspace/source/ && \
+           buildah --storage-driver=vfs build-using-dockerfile -f /workspace/source/Dockerfile -t $(params.imageName):$(params.imageVersion) . && \ 
+           buildah --storage-driver=vfs push --tls-verify=false --creds=$(cat /etc/secret-volume/username):$(cat /etc/secret-volume/password) ducky-crm:latest docker://$(params.repoUrl)/$(params.repoOrgName)/$(params.imageName):$(params.imageVersion)
+          "
+      volumeMounts:
+        - name: secret-volume
+          mountPath: /etc/secret-volume
+  volumes:
+    - name: secret-volume
+      secret:
+        secretName: registry-secret

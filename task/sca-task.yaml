@@ -1,0 +1,27 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: sca
+spec:
+  workspaces:
+  - name: maven-repo
+  inputs:
+    params:
+    - name: Url
+      description: The Solution URL
+      type: string
+    - name: Token
+      description: The Solution Token
+      type: string
+    resources:
+      - name: source
+        type: git
+  steps:
+    - name: scan
+      image: docker.io/gautambaghel/synopsys-detect:mvn
+      workingDir: /workspace/source
+      args:
+        - --detect.source.path="/workspace/source"
+        - --blackduck.url="$(params.Url)"
+        - --blackduck.api.token="$(params.Token)"
+        - --detect.tools="DETECTOR"

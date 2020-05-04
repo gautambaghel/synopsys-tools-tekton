@@ -1,0 +1,28 @@
+# LIVE DEBUGGING OF THE ATTACHED PVC
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pvc-test
+spec:
+  containers:
+  - name: busybox
+    image: busybox
+    command:
+      - tail
+    args:
+      - -f 
+      - /dev/null
+    volumeMounts:
+          - name: maven-repo
+            mountPath: /maven-repo
+    resources:
+          requests:
+            memory: "218Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "200m"
+  volumes:
+  - name: maven-repo
+    persistentVolumeClaim:
+      claimName: source-repo-pvc # create a pvc named polaris
