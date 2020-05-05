@@ -10,7 +10,7 @@ spec:
   - name: app-git
     type: git
   tasks:
-  - name: deploy-app
+  - name: deploy-with-seeker
     params:
     - name: deployFileName
       value: "deploy.yaml"
@@ -25,3 +25,25 @@ spec:
       workspace: source-repo-workspace
     - name: seeker
       workspace: seeker
+  - name: tinfoil-dast
+    runAfter: ["deploy-with-seeker"]
+    params:
+    - name: API_SECRET_KEY
+      value: "<TINFOIL_API_SECRET_KEY>"
+    - name: API_ACCESS_KEY
+      value: "<TINFOIL_API_ACCESS_KEY>"
+    - name: SITE_ID
+      value: "ducky-crm"
+    - name: SEVERITY_THRESHOLD
+      value: "High"
+    - name: POLL_WINDOW
+      value: "5"
+    taskRef:
+      name: dast
+    resources:
+      inputs:
+      - name: source
+        resource: app-git
+    workspaces:
+    - name: maven-repo
+      workspace: source-repo-workspace

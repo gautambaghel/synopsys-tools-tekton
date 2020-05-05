@@ -9,8 +9,7 @@ spec:
     resources:
       - name: source
         type: git
-    inputs:
-      params:
+    params:
       - name: API_SECRET_KEY
         description: The secret API key generated from Tinfoil
         type: string
@@ -26,9 +25,6 @@ spec:
       - name: POLL_WINDOW
         description: The poll window when quering Tinfoil APIs
         type: string
-      resources:
-      - name: source
-        type: git
   steps:
     - name: scan
       image: docker.io/gautambaghel/tinfoil:latest

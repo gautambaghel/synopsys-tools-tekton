@@ -6,6 +6,7 @@ import (
 	"time"
     "strconv"
     "net/http"
+    "crypto/tls"
 	"encoding/json"
 )
 
@@ -129,7 +130,8 @@ func main() {
 }
 
 func getJSON (url string, authorization string, target interface{}, requestType string) (int, error) {
-	client := &http.Client{}
+	tr := &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
+	client := &http.Client{Transport: tr}
 	req, _ := http.NewRequest(requestType, url, nil)
 	req.Header.Set("Authorization", authorization)
 	resp, err := client.Do(req)
