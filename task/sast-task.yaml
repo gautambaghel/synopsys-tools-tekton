@@ -5,15 +5,16 @@ metadata:
 spec:
   workspaces:
   - name: maven-repo
-  inputs:
-    params:
-    - name: Url
-      description: The Solution URL
-      type: string
-    - name: Token
-      description: The Solution Token
-      type: string
-    resources:
+  - name: polaris
+  params:
+  - name: Url
+    description: The Solution URL
+    type: string
+  - name: Token
+    description: The Solution Token
+    type: string
+  resources:
+    inputs:
     - name: source
       type: git
   steps:

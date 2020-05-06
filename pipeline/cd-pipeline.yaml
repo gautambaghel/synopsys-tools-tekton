@@ -3,9 +3,33 @@ kind: Pipeline
 metadata:
   name: cd-pipeline
 spec:
+  params:
+    - default: deploy.yaml
+      description: The name of yaml file to deploy the app
+      name: DEPLOY_FILE_NAME
+      type: string
+    - default: '<insert_tinfoil_api_secret_here>'
+      description: The API secret key for Tinfoil
+      name: TINFOIL_API_SECRET_KEY
+      type: string
+    - default: '<insert_tinfoil_api_access_key_here>'
+      description: The API access key for Tinfoil
+      name: TINFOIL_API_ACCESS_KEY
+      type: string
+    - default: insecure-bank
+      description: The name of project key in Tinfoil
+      name: SITE_ID
+      type: string
+    - default: High
+      description: The severity threshold for breaking the build
+      name: SEVERITY_THRESHOLD
+      type: string
+    - default: "5"
+      description: The poll window to query Tinfoil 
+      name: POLL_WINDOW
+      type: string
   workspaces:
   - name: source-repo-workspace
-  - name: seeker
   resources:
   - name: app-git
     type: git
@@ -13,7 +37,7 @@ spec:
   - name: deploy-with-seeker
     params:
     - name: deployFileName
-      value: "deploy.yaml"
+      value: $(params.DEPLOY_FILE_NAME)
     taskRef:
       name: deploy
     resources:
@@ -23,21 +47,19 @@ spec:
     workspaces:
     - name: maven-repo
       workspace: source-repo-workspace
-    - name: seeker
-      workspace: seeker
   - name: tinfoil-dast
     runAfter: ["deploy-with-seeker"]
     params:
     - name: API_SECRET_KEY
-      value: "<TINFOIL_API_SECRET_KEY>"
+      value: $(params.TINFOIL_API_SECRET_KEY)
     - name: API_ACCESS_KEY
-      value: "<TINFOIL_API_ACCESS_KEY>"
+      value: $(params.TINFOIL_API_ACCESS_KEY)
     - name: SITE_ID
-      value: "ducky-crm"
+      value: $(params.SITE_ID)
     - name: SEVERITY_THRESHOLD
-      value: "High"
+      value: $(params.SEVERITY_THRESHOLD)
     - name: POLL_WINDOW
-      value: "5"
+      value: $(params.POLL_WINDOW)
     taskRef:
       name: dast
     resources:

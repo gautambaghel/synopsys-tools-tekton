@@ -3,10 +3,14 @@ kind: Task
 metadata:
   name: build
 spec:
-  inputs:
-    resources:
+  resources:
+    inputs:
       - name: source
         type: git
+  params:
+    - name: projectName
+      description: The name of the Project to scan & run
+      type: string
   steps:
     - name: build
       image: gcr.io/cloud-builders/mvn
@@ -15,15 +19,15 @@ spec:
       command:
         - /usr/bin/mvn 
         - package
-    #   GETTING ERRORS AFTER INITIAL RUN IN STORING DUE TO PVC POLICY BEING "ReadWriteOnce"
-    #   REMOVE THIS IN ACTUAL USE CASE, USE "ReadWriteMany"
-    #   OR STORE IN AN ARTIFACT REPOSITORY LIKE artifactory, aws, azure or gcp
+    # GETTING ERRORS AFTER INITIAL RUN IN STORING DUE TO PVC POLICY BEING "ReadWriteOnce"
+    # REMOVE THIS IN ACTUAL USE CASE, USE "ReadWriteMany"
+    # OR STORE IN AN ARTIFACT REPOSITORY LIKE artifactory, aws, azure or gcp
     # - name: store
     #   image: busybox
     #   workingDir: /workspace/source
     #   resources: {}
     #   command: [cp]
     #   args:
-    #     ["-rv", "target/", "/workspace/maven-repo/"]
+    #     ["-rv", "target/", "/workspace/maven-repo/$(params.projectName)"]
   workspaces:
     - name: maven-repo

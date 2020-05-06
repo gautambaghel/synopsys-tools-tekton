@@ -6,15 +6,15 @@ metadata:
 spec:
   containers:
   - name: busybox
-    image: busybox
+    image: docker.io/maven:3.6.3-jdk-8
     command:
       - tail
     args:
       - -f 
       - /dev/null
     volumeMounts:
-          - name: maven-repo
-            mountPath: /maven-repo
+          - name: seeker
+            mountPath: /seeker
     resources:
           requests:
             memory: "218Mi"
@@ -23,6 +23,6 @@ spec:
             memory: "512Mi"
             cpu: "200m"
   volumes:
-  - name: maven-repo
+  - name: seeker
     persistentVolumeClaim:
-      claimName: source-repo-pvc # create a pvc named polaris
+      claimName: seeker-pvc # create a pvc named polaris

@@ -12,8 +12,11 @@ spec:
   resources:
     - name: app-git
       resourceRef:
-        name: app-git
+        name: insecure-bank-git
   workspaces:
   - name: source-repo-workspace
     persistentVolumeClaim:
       claimName: source-repo-pvc
+  - name: polaris
+    persistentVolumeClaim:
+      claimName: polaris

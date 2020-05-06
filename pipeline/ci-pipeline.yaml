@@ -3,8 +3,43 @@ kind: Pipeline
 metadata:
   name: ci-pipeline
 spec:
+  params:
+    - default: insecure-bank
+      description: The name of the project to run and scan
+      name: PROJECT_NAME
+      type: string
+    - default: insecure-bank
+      description: The version of the project to run and scan
+      name: PROJECT_VERSION
+      type: string
+    - default: opssighttestorg
+      description: The registry organization name to push the image
+      name: REG_ORG
+      type: string
+    - default: quay.io
+      description: The registry URL to push the image
+      name: REG_URL
+      type: string
+    - default: '<insert_polaris_url_here>'
+      description: The Polaris URL to connect
+      name: POLARIS_URL
+      type: string
+    - default: 'insert_polaris_token_here'
+      description: The Polaris Token to authenticate with the server
+      name: POLARIS_TOKEN
+      type: string
+    - default: 'insert_blackduck_url_here'
+      description: The Black Duck URL to connect
+      name: BLACKDUCK_URL
+      type: string
+    - default: >-
+        'insert_blackduck_token_here'
+      description: The Black Duck Token to authenticate with the server
+      name: BLACKDUCK_TOKEN
+      type: string
   workspaces:
   - name: source-repo-workspace
+  - name: polaris
   resources:
   - name: app-git
     type: git
@@ -26,6 +61,9 @@ spec:
     runAfter: ["cleanup"]
     taskRef:
       name: build
+    params:
+    - name: projectName
+      value: $(params.PROJECT_NAME)
     resources:
       inputs:
       - name: source
@@ -39,9 +77,9 @@ spec:
     runAfter: ["cleanup"]
     params:
     - name: Url
-      value: "<INSERT_POLARIS_URL_HERE>"
+      value: $(params.POLARIS_URL)
     - name: Token
-      value: "<INSERT_POLARIS_TOKEN_HERE>"
+      value: $(params.POLARIS_TOKEN)
     resources:
       inputs:
       - name: source
@@ -49,6 +87,8 @@ spec:
     workspaces:
     - name: maven-repo
       workspace: source-repo-workspace
+    - name: polaris
+      workspace: polaris
   - name: verify
     runAfter: ["build"]
     taskRef:
@@ -68,10 +108,14 @@ spec:
       name: sca
     runAfter: ["build"]
     params:
-    - name: Url
-      value: "INSERT_BLACKDUCK_URL_HERE"
-    - name: Token
-      value: "INSERT_BLACKDUCK_TOKEN_HERE"
+      - name: Url
+        value: $(params.BLACKDUCK_URL)
+      - name: Token
+        value: $(params.BLACKDUCK_TOKEN)
+      - name: detectArguments
+        value:
+          - '--detect.tools=DETECTOR'
+          - '--blackduck.trust.cert=true'
     resources:
       inputs:
       - name: source
@@ -84,16 +128,16 @@ spec:
       name: push
     runAfter: ["verify"]
     params:
-    - name: repoUrl
-      value: "quay.io"
-    - name: repoOrgName
-      value: "opssighttestorg"
-    - name: imageName
-      value: "ducky-crm"
-    - name: imageVersion
-      value: "latest"
-    - name: workspaceName
-      value: "maven-repo"
+      - name: registryUrl
+        value: $(params.REG_URL)
+      - name: registryOrgName
+        value: $(params.REG_ORG)
+      - name: imageName
+        value: $(params.PROJECT_NAME)
+      - name: imageVersion
+        value: $(params.PROJECT_VERSION)
+      - name: workspaceName
+        value: maven-repo
     resources:
       inputs:
         - name: source

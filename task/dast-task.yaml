@@ -5,26 +5,26 @@ metadata:
 spec:
   workspaces:
   - name: maven-repo
-  inputs:
-    resources:
+  resources:
+    inputs:
       - name: source
         type: git
-    params:
-      - name: API_SECRET_KEY
-        description: The secret API key generated from Tinfoil
-        type: string
-      - name: API_ACCESS_KEY
-        description: The API access key generated from Tinfoil
-        type: string
-      - name: SITE_ID
-        description: The ID of the site to be scanned
-        type: string
-      - name: SEVERITY_THRESHOLD
-        description: The Severity threashold to break the build
-        type: string
-      - name: POLL_WINDOW
-        description: The poll window when quering Tinfoil APIs
-        type: string
+  params:
+    - name: API_SECRET_KEY
+      description: The secret API key generated from Tinfoil
+      type: string
+    - name: API_ACCESS_KEY
+      description: The API access key generated from Tinfoil
+      type: string
+    - name: SITE_ID
+      description: The ID of the site to be scanned
+      type: string
+    - name: SEVERITY_THRESHOLD
+      description: The Severity threashold to break the build
+      type: string
+    - name: POLL_WINDOW
+      description: The poll window when quering Tinfoil APIs
+      type: string
   steps:
     - name: scan
       image: docker.io/gautambaghel/tinfoil:latest

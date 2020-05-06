@@ -5,13 +5,12 @@ metadata:
 spec:
   workspaces:
   - name: maven-repo
-  - name: seeker
-  inputs:
-    params:
-    - name: deployFileName
-      description: The file to deploy the app in cluster
-      type: string
-    resources:
+  params:
+  - name: deployFileName
+    description: The file to deploy the app in cluster
+    type: string
+  resources:
+    inputs:
       - name: source
         type: git
   steps:

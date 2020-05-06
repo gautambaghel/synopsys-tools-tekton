@@ -9,8 +9,8 @@ spec:
       description: The Maven goals to run
       name: GOALS
       type: array
-  inputs:
-    resources:
+  resources:  
+    inputs:
       - name: source
         type: git
   steps:

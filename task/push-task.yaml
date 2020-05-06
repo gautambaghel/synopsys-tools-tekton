@@ -5,16 +5,16 @@ metadata:
 spec:
   workspaces:
   - name: maven-repo
-  inputs:
-    resources:
+  resources: 
+    inputs:
       - name: source
         type: git
-    params:
-    - name: repoUrl
-      description: The Repo URL
+  params:
+    - name: registryUrl
+      description: The image registry URL
       type: string
-    - name: repoOrgName
-      description: The repo organization name
+    - name: registryOrgName
+      description: The image registry organization name
       type: string
     - name: imageName
       description: The image name
@@ -32,9 +32,9 @@ spec:
       command:
         - sh
         - -c
-        - "mkdir target/ && cp -vr /workspace/$(params.workspaceName)/target/ /workspace/source/ && \
+        - "mkdir target/ && cp -vr /workspace/$(params.workspaceName)/$(params.imageName)/target/ /workspace/source/ && \
            buildah --storage-driver=vfs build-using-dockerfile -f /workspace/source/Dockerfile -t $(params.imageName):$(params.imageVersion) . && \ 
-           buildah --storage-driver=vfs push --tls-verify=false --creds=$(cat /etc/secret-volume/username):$(cat /etc/secret-volume/password) ducky-crm:latest docker://$(params.repoUrl)/$(params.repoOrgName)/$(params.imageName):$(params.imageVersion)
+           buildah --storage-driver=vfs push --tls-verify=false --creds=$(cat /etc/secret-volume/username):$(cat /etc/secret-volume/password) $(params.imageName):$(params.imageVersion) docker://$(params.registryUrl)/$(params.registryOrgName)/$(params.imageName):$(params.imageVersion)
           "
       volumeMounts:
         - name: secret-volume

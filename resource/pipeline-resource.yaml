@@ -1,12 +1,25 @@
 apiVersion: tekton.dev/v1alpha1
 kind: PipelineResource
 metadata:
-  name: app-git
+  name: ducky-crm-git
   namespace: default
 spec:
   type: git
   params:
     - name: url
       value: 'https://github.com/gautambaghel/ducky-crm.git'
+    - name: revision
+      value: tekton
+---
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: insecure-bank-git
+  namespace: default
+spec:
+  type: git
+  params:
+    - name: url
+      value: 'https://github.com/gautambaghel/insecure-bank.git'
     - name: revision
       value: tekton

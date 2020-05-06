@@ -5,15 +5,18 @@ metadata:
 spec:
   workspaces:
   - name: maven-repo
-  inputs:
-    params:
+  params:
     - name: Url
       description: The Solution URL
       type: string
     - name: Token
       description: The Solution Token
       type: string
-    resources:
+    - name: detectArguments
+      description: The arguments for detect scan
+      type: array
+  resources: 
+    inputs:
       - name: source
         type: git
   steps:
@@ -24,4 +27,4 @@ spec:
         - --detect.source.path="/workspace/source"
         - --blackduck.url="$(params.Url)"
         - --blackduck.api.token="$(params.Token)"
-        - --detect.tools="DETECTOR"
+        - $(params.detectArguments)
